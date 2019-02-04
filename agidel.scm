@@ -8,7 +8,7 @@ This is the main file in the whole Agidel ecosystem.
         format)
 
 
-(define ((show-help-message))
+(define (show-help-message)
   (format #t "Agidel transpiler. You are welcome!\n"))
 
 (define (traverse-args args)
@@ -26,7 +26,7 @@ This is the main file in the whole Agidel ecosystem.
       (exit)]
      ;; When arg is a filename. As you can see, no files starting with a dash
      ;; are supported. That's the design.
-     [(not (string-prefix? (car args) "-"))
+     [(not (string-prefix? "-" (car args)))
       (hash-table-set! args-hash
                         'files
                         (cons (car args) (hash-table-ref args-hash 'files)))
@@ -43,8 +43,11 @@ This is the main file in the whole Agidel ecosystem.
                       (append (cadr args)
                               (hash-table-ref args-hash 'syntranses)))]
                [(-p --plugins)
-                (list 'plugins (cadr args))]))
+                (list 'plugins (cadr args))]
+               [else (format #f "Error: unsupported option")
+                     (exit 1)]))
       (loop args-hash (cddr args))])
     ))
 
-(format #t "~A" (hash-table->alist (traverse-args (command-line-arguments))))
+(format #t "~A\n" (command-line-arguments))
+(format #t "~A\n" (hash-table->alist (traverse-args (command-line-arguments))))
