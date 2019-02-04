@@ -8,8 +8,8 @@ This is the main file in the whole Agidel ecosystem.
         format)
 
 
-(define (show-help-message)
-  (format #t "Agidel transpiler. You are welcome"))
+(define ((show-help-message))
+  (format #t "Agidel transpiler. You are welcome!\n"))
 
 (define (traverse-args args)
   (let loop [[args-hash (alist->hash-table '((files)
@@ -28,7 +28,7 @@ This is the main file in the whole Agidel ecosystem.
      ;; are supported. That's the design.
      [(not (string-prefix? (car args) "-"))
       (hash-table-set! args-hash
-                        'file-list
+                        'files
                         (cons (car args) (hash-table-ref args-hash 'files)))
       (loop args-hash (cdr args))]
      ;; Otherwise, parse as option.
