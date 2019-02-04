@@ -3,6 +3,7 @@ This is the main file in the whole Agidel ecosystem.
 |#
 (import (chicken process-context)
         (srfi 69)
+        (srfi 13)
         (prefix (agidel core) agidel/)
         format)
 
@@ -45,3 +46,5 @@ This is the main file in the whole Agidel ecosystem.
                 (list 'plugins (cadr args))]))
       (loop args-hash (cddr args))])
     ))
+
+(format #t "~A" (hash-table->alist (traverse-args (command-line-arguments))))
