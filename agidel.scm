@@ -59,3 +59,18 @@ This is the main file in the whole Agidel ecosystem.
       (loop args-hash (cdr args))]))
   (loop (alist->hash-table '((files) (syntranses) (plugins))) args))
 
+
+
+(let* ((args-traversed (traverse-args (command-line-arguments)))
+       (files          (hash-table-ref args-traversed 'files))
+       (syntranses     (hash-table-ref args-traversed 'syntranses))
+       (plugins        (hash-table-ref args-traversed 'plugins)))
+  #| do later
+  (load-syntranses syntranses)
+  (load-plugins plugins)
+  (for-each
+    (lambda (file)
+       (execute (syntrans file)))
+    files)
+  |#
+  )
