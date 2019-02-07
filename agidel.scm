@@ -13,7 +13,8 @@ This is the main file in the whole Agidel ecosystem.
 ;;
 ;; `lst` is list of syntranses or plugins as symbols.
 ;; `path` is path where to search for files.
-(define (extension-files lst path)
+;; `name` is "plugins" or "syntranses".
+(define (extension-files lst path name)
   (let* ((needed-exts (map (lambda (f) (string-append f ".scm"))
                            (map symbol->string lst)))
          (local-exts (directory path))
@@ -21,7 +22,8 @@ This is the main file in the whole Agidel ecosystem.
   (if (not (eq? (length matched-exts) (length needed-exts)))
       (begin
         (fprintf (current-error-port)
-                 "Agidel: could not load extensions: ~S"
+                 "Agidel: could not load ~A: ~S"
+                 name
                  (lset-difference string=? needed-exts matched-exts))
         (exit 1))
       matched-exts))
