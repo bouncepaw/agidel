@@ -7,6 +7,19 @@ This is the main file in the whole Agidel ecosystem.
         (prefix (agidel core) agidel/)
         format)
 
+;; When an arg specifying extension to load is not loaded, defaults are applied.
+;; This function does exactly that.
+(define (apply-defaults args-hash)
+  (let* ((hardcoded-hash
+           (alist->hash-table '((plugins c)
+                                (syntranses discomment
+                                            disbrace
+                                            disbracket
+                                            quotify
+                                            aeval)
+                                (files)))))
+    (hash-table-merge args-hash hardcoded-hash)))
+
 ;; Syntax faciliation for `traverse-args`.
 (define (string=?2 str o1 o2)
   (or (string=? str o1) (string=? str o2)))
@@ -62,15 +75,16 @@ This is the main file in the whole Agidel ecosystem.
 
 
 (let* ((args-traversed (traverse-args (command-line-arguments)))
-       (files          (hash-table-ref args-traversed 'files))
-       (syntranses     (hash-table-ref args-traversed 'syntranses))
-       (plugins        (hash-table-ref args-traversed 'plugins)))
+       (args-defaulted (apply-defaults args-traversed))
+       (files          (hash-table-ref args-defaulted 'files))
+       (syntranses     (hash-table-ref args-defaulted 'syntranses))
+       (plugins        (hash-table-ref args-defaulted 'plugins)))
   #| do later
   (load-syntranses syntranses)
   (load-plugins plugins)
   (for-each
-    (lambda (file)
-       (execute (syntrans file)))
-    files)
+  (lambda (file)
+  (execute (syntrans file)))
+  files)
   |#
   )
