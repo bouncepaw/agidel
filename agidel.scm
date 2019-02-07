@@ -26,7 +26,8 @@ This is the main file in the whole Agidel ecosystem.
                  name
                  (lset-difference string=? needed-exts matched-exts))
         (exit 1))
-      matched-exts))
+      (map (lambda (f) (string-append path f)) matched-exts)))
+
 
 ;; When an arg specifying extension to load is not loaded, defaults are applied.
 ;; This function does exactly that.
