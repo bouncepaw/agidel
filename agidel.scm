@@ -114,13 +114,15 @@ This is the main file in the whole Agidel ecosystem.
        (args-defaulted (apply-defaults args-traversed))
        (files          (hash-table-ref args-defaulted 'files))
        (syntranses     (hash-table-ref args-defaulted 'syntranses))
-       (plugins        (hash-table-ref args-defaulted 'plugins)))
+       (plugins        (hash-table-ref args-defaulted 'plugins))
+       (syntrans-paths (syntrans-files syntranses))
+       (plugin-paths   (plugin-files plugins)))
   #| do later
   (load-syntranses syntranses)
   (load-plugins plugins)
   (for-each
-  (lambda (file)
-  (execute (syntrans file)))
-  files)
+    (lambda (file)
+      (execute (syntrans file)))
+    files)
   |#
   )
