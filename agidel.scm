@@ -4,20 +4,39 @@ This is the main file in the whole Agidel ecosystem.
 (import (chicken process-context)
         (srfi 69)
         (srfi 13)
+        (srfi 1)
         (prefix (agidel core) agidel/)
         format)
+
+;; This function returns list of files which corresponds to list of syntranses
+;; or plugins to load.
+;;
+;; `lst` is list of syntranses or plugins as symbols.
+;; `path` is path where to search for files.
+(define (extension-files lst path)
+  (let* ((needed-exts (map (lambda (f) (string-append f ".scm"))
+                           (map symbol->string lst)))
+         (local-exts (directory path))
+         (matched-exts (lset-intersection string=? needed-exts local-exts))))
+  (if (not (eq? (length matched-exts) (length needed-exts)))
+      (begin
+        (fprintf (current-error-port)
+                 "Agidel: could not load extensions: ~S"
+                 (lset-difference string=? needed-exts matched-exts))
+        (exit 1))
+      matched-exts))
 
 ;; When an arg specifying extension to load is not loaded, defaults are applied.
 ;; This function does exactly that.
 (define (apply-defaults args-hash)
   (let* ((hardcoded-hash
-           (alist->hash-table '((plugins c)
-                                (syntranses discomment
-                                            disbrace
-                                            disbracket
-                                            quotify
-                                            aeval)
-                                (files)))))
+          (alist->hash-table '((plugins c)
+                               (syntranses discomment
+                                           disbrace
+                                           disbracket
+                                           quotify
+                                           aeval)
+                               (files)))))
     (hash-table-merge args-hash hardcoded-hash)))
 
 ;; Syntax faciliation for `traverse-args`.
