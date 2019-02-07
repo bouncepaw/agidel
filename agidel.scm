@@ -28,6 +28,20 @@ This is the main file in the whole Agidel ecosystem.
         (exit 1))
       (map (lambda (f) (string-append path f)) matched-exts)))
 
+;; Return list of files with plugins. `lst` is list of plugins as symbols.
+(define (plugin-files lst)
+  ;; TODO: add support for $AGIDEL_DIR
+  (let* ((path (string-append (get-environment-variable "HOME")
+                              "/.agidel/syntrans")))
+    (extension-files lst path "syntranses")))
+
+;; Return list of files with syntranses. `lst` is list of syntranses as symbols.
+(define (syntrans-files lst)
+  ;; TODO: add support for $AGIDEL_DIR
+  (let* ((path (string-append (get-environment-variable "HOME")
+                              "/.agidel/plugin")))
+    (extension-files lst path "plugins")))
+
 
 ;; When an arg specifying extension to load is not loaded, defaults are applied.
 ;; This function does exactly that.
