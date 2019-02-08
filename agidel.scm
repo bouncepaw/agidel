@@ -147,7 +147,10 @@ This is the main file in the whole Agidel ecosystem.
        (syntrans-paths (syntrans-files syntranses))
        (plugin-paths   (plugin-files plugins))
        (syntrans-f     (compose-syntrans-f syntranses syntrans-paths)))
-
+  (agilog "Agidel test run with such things:\n")
+  (agilog "\tfiles\t~A\n\tsyntranses\t~A\n" files syntranses)
+  (agilog "\tplugins\t~A\n" plugins)
+  (agilog "Paths:\n\tplugins\t~S\n\tsyntranses\t~S\n" plugin-paths syntrans-paths)
   (format #t "~S"   (map (lambda (f)
                            (syntrans-f (read-string #f (open-input-file f))))
                          files))
