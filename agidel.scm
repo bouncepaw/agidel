@@ -3,6 +3,7 @@ This is the main file in the whole Agidel ecosystem.
 |#
 (import (chicken process-context)
         (chicken io)
+        (chicken file)
         (srfi 69)
         (srfi 13)
         (srfi 1)
@@ -66,8 +67,7 @@ This is the main file in the whole Agidel ecosystem.
                                (syntranses discomment
                                            disbrace
                                            disbracket
-                                           quotify
-                                           aeval)
+                                           quotify)
                                (files)))))
     (hash-table-merge args-hash hardcoded-hash)))
 
@@ -78,9 +78,9 @@ This is the main file in the whole Agidel ecosystem.
 ;; Syntax faciliation for `traverse-args`.
 (define-syntax set-args-hash
   (syntax-rules ()
-    [(_ key val)
+    [(_ args-hash key val)
      (hash-table-set! args-hash key val)]
-    [(_ key fun val)
+    [(_ args-hash key fun val)
      (hash-table-set! args-hash
                       key
                       (fun val (hash-table-ref args-hash key)))]))
@@ -107,36 +107,39 @@ This is the main file in the whole Agidel ecosystem.
       (exit)]
      ;; When setting full syntrans list.
      [(string=?2 (car args) "-s" "--syntranses")
-      (set-args-hash 'syntranses (car (agidel/parse-string (cadr args))))
+      (set-args-hash args-hash 'syntranses (car (agidel/parse-string (cadr args))))
       (loop args-hash (cddr args))]
      ;; When just prepending syntrans list.
      [(string=?2 (car args) "-r" "--prepend-syntranses")
-      (set-args-hash 'syntranses append (car (agidel/parse-string (cadr args))))
+      (set-args-hash args-hash 'syntranses append (car (agidel/parse-string (cadr args))))
       (loop args-hash (cddr args))]
      ;; When setting plugin list
      [(string=?2 (car args) "-p" "--plugins")
-      (set-args-hash 'plugins (car (agidel/parse-string (cadr args))))
+      (set-args-hash args-hash 'plugins (car (agidel/parse-string (cadr args))))
       (loop args-hash (cddr args))]
      ;; Otherwise consider argument as filename.
      [else
-      (set-args-hash 'files cons (car args))
+      (set-args-hash args-hash 'files cons (car args))
       (loop args-hash (cdr args))]))
-  (loop (alist->hash-table '((files) (syntranses) (plugins))) args))
+  (loop (alist->hash-table '((files))) args))
 
 
 
 (define (compose-syntrans-f syntranses paths)
   (map load paths)
   (let* ((/main-ed-syntranses
-          (reverse (map (lambda (st) (symbol-append st '/main))
-                        syntranses)))
+          (map (lambda (st) (symbol-append st '/main))
+               syntranses))
          (prefixed-syntranses
           (map (lambda (st) (list 'prefix
                                   (symbol-append 'agidel-syntrans. st)
                                   (symbol-append st '/)))
                syntranses)))
-    (eval (list 'import prefixed-syntranses))
-    (apply compose /main-ed-syntranses)))
+    (eval (cons 'import prefixed-syntranses))
+    (eval (list 'lambda
+                '(source)
+                (foldl (lambda (acc next)
+                         (list next acc)) 'source /main-ed-syntranses)))))
 
 
 (let* ((args-traversed (traverse-args (command-line-arguments)))
@@ -146,11 +149,13 @@ This is the main file in the whole Agidel ecosystem.
        (plugins        (hash-table-ref args-defaulted 'plugins))
        (syntrans-paths (syntrans-files syntranses))
        (plugin-paths   (plugin-files plugins))
-       (syntrans-f     (compose-syntrans-f syntranses syntrans-paths)))
+       (syntrans-f     (compose-syntrans-f syntranses syntrans-paths))
+       )
   (agilog "Agidel test run with such things:\n")
-  (agilog "\tfiles\t~A\n\tsyntranses\t~A\n" files syntranses)
-  (agilog "\tplugins\t~A\n" plugins)
-  (agilog "Paths:\n\tplugins\t~S\n\tsyntranses\t~S\n" plugin-paths syntrans-paths)
+  (agilog "\tfiles\t\t~A\n\tsyntranses\t~A\n" files syntranses)
+  (agilog "\tplugins\t\t~A\n" plugins)
+  (agilog "args\t~A\n" (hash-table->alist args-defaulted))
+  (agilog "Paths:\n\tplugins\t\t~S\n\tsyntranses\t~S\n" plugin-paths syntrans-paths)
   (format #t "~S"   (map (lambda (f)
                            (syntrans-f (read-string #f (open-input-file f))))
                          files))
