@@ -8,6 +8,10 @@ This is the main file in the whole Agidel ecosystem.
         (prefix (agidel core) agidel/)
         format)
 
+(define enable-agilog? #t)
+(define (agilog . os)
+  (when enable-agilog? (apply format #t os)))
+
 ;; This function returns list of files which corresponds to list of syntranses
 ;; or plugins to load.
 ;;
@@ -18,34 +22,38 @@ This is the main file in the whole Agidel ecosystem.
   (let* ((needed-exts (map (lambda (f) (string-append f ".scm"))
                            (map symbol->string lst)))
          (local-exts (directory path))
-         (matched-exts (lset-intersection string=? needed-exts local-exts))))
-  (if (not (eq? (length matched-exts) (length needed-exts)))
-      (begin
-        (fprintf (current-error-port)
-                 "Agidel: could not load ~A: ~S"
-                 name
-                 (lset-difference string=? needed-exts matched-exts))
-        (exit 1))
-      (map (lambda (f) (string-append path f)) matched-exts)))
-
-;; Return list of files with plugins. `lst` is list of plugins as symbols.
-(define (plugin-files lst)
-  (let* ((agidel-dir (get-environment-variable "AGIDEL_DIR"))
-         (path (if (not agidel-dir)
-                   (string-append (get-environment-variable "HOME")
-                                  "/.agidel/syntrans")
-                   (string-append agidel-dir
-                                  "/syntrans"))))
-    (extension-files lst path "syntranses")))
+         (matched-exts (lset-intersection string=? needed-exts local-exts)))
+    (agilog "needed exts: ~A;\tlocal exts: ~A;\tmatched-exts: ~A\n"
+            needed-exts local-exts matched-exts)
+    (if (eq? (length matched-exts) (length needed-exts))
+        (map (lambda (f) (string-append path f)) matched-exts)
+        (begin
+          (format (current-error-port)
+                  "Agidel: could not load ~A: ~S\n"
+                  name
+                  (lset-difference string=? needed-exts matched-exts))
+          #|(exit 1)|#))))
 
 ;; Return list of files with syntranses. `lst` is list of syntranses as symbols.
 (define (syntrans-files lst)
   (let* ((agidel-dir (get-environment-variable "AGIDEL_DIR"))
          (path (if (not agidel-dir)
                    (string-append (get-environment-variable "HOME")
-                                  "/.agidel/plugin")
+                                  "/.agidel/syntrans/")
+                   (string-append agidel-dir
+                                  "/syntrans"))))
+    (format #t "Load plugins in ~A\n" path)
+    (extension-files lst path "syntranses")))
+
+;; Return list of files with plugins. `lst` is list of plugins as symbols.
+(define (plugin-files lst)
+  (let* ((agidel-dir (get-environment-variable "AGIDEL_DIR"))
+         (path (if (not agidel-dir)
+                   (string-append (get-environment-variable "HOME")
+                                  "/.agidel/plugin/")
                    (string-append agidel-dir
                                   "/plugin"))))
+    (format #t "Load syntranses in ~A\n" path)
     (extension-files lst path "plugins")))
 
 
@@ -123,6 +131,7 @@ This is the main file in the whole Agidel ecosystem.
        (plugins        (hash-table-ref args-defaulted 'plugins))
        (syntrans-paths (syntrans-files syntranses))
        (plugin-paths   (plugin-files plugins)))
+  (display "placeholder\n")
   #| do later
   (load-syntranses syntranses)
   (load-plugins plugins)
