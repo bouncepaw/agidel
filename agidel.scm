@@ -30,16 +30,22 @@ This is the main file in the whole Agidel ecosystem.
 
 ;; Return list of files with plugins. `lst` is list of plugins as symbols.
 (define (plugin-files lst)
-  ;; TODO: add support for $AGIDEL_DIR
-  (let* ((path (string-append (get-environment-variable "HOME")
-                              "/.agidel/syntrans")))
+  (let* ((agidel-dir (get-environment-variable "AGIDEL_DIR"))
+         (path (if (not agidel-dir)
+                   (string-append (get-environment-variable "HOME")
+                                  "/.agidel/syntrans")
+                   (string-append agidel-dir
+                                  "/syntrans"))))
     (extension-files lst path "syntranses")))
 
 ;; Return list of files with syntranses. `lst` is list of syntranses as symbols.
 (define (syntrans-files lst)
-  ;; TODO: add support for $AGIDEL_DIR
-  (let* ((path (string-append (get-environment-variable "HOME")
-                              "/.agidel/plugin")))
+  (let* ((agidel-dir (get-environment-variable "AGIDEL_DIR"))
+         (path (if (not agidel-dir)
+                   (string-append (get-environment-variable "HOME")
+                                  "/.agidel/plugin")
+                   (string-append agidel-dir
+                                  "/plugin"))))
     (extension-files lst path "plugins")))
 
 
@@ -121,8 +127,8 @@ This is the main file in the whole Agidel ecosystem.
   (load-syntranses syntranses)
   (load-plugins plugins)
   (for-each
-    (lambda (file)
-      (execute (syntrans file)))
-    files)
+  (lambda (file)
+  (execute (syntrans file)))
+  files)
   |#
   )
