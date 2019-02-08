@@ -2,6 +2,7 @@
 This is the main file in the whole Agidel ecosystem.
 |#
 (import (chicken process-context)
+        (chicken io)
         (srfi 69)
         (srfi 13)
         (srfi 1)
@@ -124,20 +125,30 @@ This is the main file in the whole Agidel ecosystem.
 
 
 
+(define (compose-syntrans-f syntranses paths)
+  (map load paths)
+  (let* ((/main-ed-syntranses
+          (reverse (map (lambda (st) (symbol-append st '/main))
+                        syntranses)))
+         (prefixed-syntranses
+          (map (lambda (st) (list 'prefix
+                                  (symbol-append 'agidel-syntrans. st)
+                                  (symbol-append st '/)))
+               syntranses)))
+    (eval (list 'import prefixed-syntranses))
+    (apply compose /main-ed-syntranses)))
+
+
 (let* ((args-traversed (traverse-args (command-line-arguments)))
        (args-defaulted (apply-defaults args-traversed))
        (files          (hash-table-ref args-defaulted 'files))
        (syntranses     (hash-table-ref args-defaulted 'syntranses))
        (plugins        (hash-table-ref args-defaulted 'plugins))
        (syntrans-paths (syntrans-files syntranses))
-       (plugin-paths   (plugin-files plugins)))
-  (display "placeholder\n")
-  #| do later
-  (load-syntranses syntranses)
-  (load-plugins plugins)
-  (for-each
-  (lambda (file)
-  (execute (syntrans file)))
-  files)
-  |#
+       (plugin-paths   (plugin-files plugins))
+       (syntrans-f     (compose-syntrans-f syntranses syntrans-paths)))
+
+  (format #t "~S"   (map (lambda (f)
+                           (syntrans-f (read-string #f (open-input-file f))))
+                         files))
   )
