@@ -1,6 +1,6 @@
 (module
  agidel.core
- (disdot dotify parse-string mirror-set!)
+ (disdot dotify parse-string mirror-set! add-to-list add-to-list!)
  (import scheme
          (chicken base)
          (chicken string)
@@ -20,13 +20,21 @@
  (define plugins-dir (get-environment-variable "AGIDEL_PLUGINS_DIR"))
  ;; Plugin names that are installed in `plugins-dir`.
  (define installed-plugins (map string->symbol
-                                (filter
-                                 (lambda (file) (car (string-split file ".")))
-                                 (directory plugins-dir))))
+ (filter
+ (lambda (file) (car (string-split file ".")))
+ (directory plugins-dir))))
  ;; Plugins that are asked to be loaded by the transpiler.
  (define plugins-to-load (get-environment-variable "AGIDEL_LOAD_PLUGINS"))
  |#
 
+ ;; (add-to-list '(a b) 'c) → (a b c)
+ (define (add-to-list lst elt)
+   (append lst (list elt)))
+
+ (define-syntax add-to-list!
+   (syntax-rules ()
+     ((_ lst elt) (set! lst (add-to-list lst elt)))))
+ 
  ;; (disdot '(1 2 3 .4)) → (1 2 3 4)
  (define (disdot dotted-list)
    (append (take dotted-list (length+ dotted-list))
