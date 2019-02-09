@@ -26,7 +26,7 @@ This is the main file in the whole Agidel ecosystem.
          (path (if agidel-dir
                    (string-append agidel-dir "/" name "/")
                    (string-append (get-environment-variable "HOME")
-                                  "./agidel/" name "/")))
+                                  "/.agidel/" name "/")))
          (needed-exts (map (lambda (f) (string-append f ".scm"))
                            (map symbol->string lst)))
          (local-exts (directory path))

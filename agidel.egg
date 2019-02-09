@@ -1,6 +1,8 @@
 ((author "Timur Ismagilov")
  (synopsis "Agidel transpiler")
  (license "MIT")
- (dependencies srfi-69 srfi-1 format clojurian agidel)
+ (dependencies srfi-69 srfi-1 format clojurian)
  (components
+    (extension agidel.core (source "core.scm"))
+    (extension agidel.class (source "class.scm"))
     (program agidel (source "agidel.scm"))))
