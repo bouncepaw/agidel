@@ -1,2 +1,12 @@
-* TODO fix failing cli args parsing.
+* DONE fix failing cli args parsing.  
   it is meant to be working perfectly, but no.
+  
+* TODO fix syntranses
+  for example, disbracket is not working perfectly.
+
+* TODO add prepare syntrans
+  it has to convert agidel ast to scheme code, converting function
+  invocatoins to what they need to be and etc.
+
+* TODO add aeval syntrans
+  it is a simple wrapper around chicken interpreter.
