@@ -8,7 +8,8 @@ This is the main file in the whole Agidel ecosystem.
         (srfi 13)
         (srfi 1)
         (prefix (agidel core) agidel/)
-        format)
+        format
+        (clojurian syntax))
 
 (define enable-agilog? #t)
 (define (agilog . os)
@@ -25,8 +26,6 @@ This is the main file in the whole Agidel ecosystem.
                            (map symbol->string lst)))
          (local-exts (directory path))
          (matched-exts (lset-intersection string=? needed-exts local-exts)))
-    (agilog "needed exts: ~A;\tlocal exts: ~A;\tmatched-exts: ~A\n"
-            needed-exts local-exts matched-exts)
     (if (eq? (length matched-exts) (length needed-exts))
         (map (lambda (f) (string-append path f)) matched-exts)
         (begin
@@ -44,7 +43,6 @@ This is the main file in the whole Agidel ecosystem.
                                   "/.agidel/syntrans/")
                    (string-append agidel-dir
                                   "/syntrans"))))
-    (format #t "Load plugins in ~A\n" path)
     (extension-files lst path "syntranses")))
 
 ;; Return list of files with plugins. `lst` is list of plugins as symbols.
@@ -55,7 +53,6 @@ This is the main file in the whole Agidel ecosystem.
                                   "/.agidel/plugin/")
                    (string-append agidel-dir
                                   "/plugin"))))
-    (format #t "Load syntranses in ~A\n" path)
     (extension-files lst path "plugins")))
 
 
@@ -147,7 +144,8 @@ This is the main file in the whole Agidel ecosystem.
        (files          (hash-table-ref args 'files))
        (syntrans-paths (syntrans-files (hash-table-ref args 'syntranses)))
        (plugin-paths   (plugin-files (hash-table-ref args 'plugins)))
-       (syntrans-f     (compose-syntrans-f syntranses syntrans-paths))
+       (syntrans-f     (compose-syntrans-f (hash-table-ref args 'syntranses)
+                                           syntrans-paths))
        (parsed-files   (-> (lambda (f)
                              (-> f
                                  open-input-file
