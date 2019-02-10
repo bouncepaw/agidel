@@ -5,4 +5,5 @@
  (components
     (extension agidel.core (source "core.scm"))
     (extension agidel.class (source "class.scm"))
+    (extension agidel.plugin (source "plugin.scm"))
     (program agidel (source "agidel.scm"))))

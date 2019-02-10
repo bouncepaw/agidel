@@ -8,6 +8,7 @@ This is the main file in the whole Agidel ecosystem.
         (srfi 13)
         (srfi 1)
         (prefix (agidel core) agidel/)
+        (prefix (agidel plugin) plugin/)
         format
         (clojurian syntax))
 
@@ -20,13 +21,6 @@ This is the main file in the whole Agidel ecosystem.
 ;; symbols. The order of files is the same as order in `lst`.
 (define (syntrans-files lst)
   (agidel/extension-files lst "syntrans" "es"))
-
-
-
-;; Return list of files with plugins. `lst` is list of plugins as symbols. The
-;; order of files is the same as order in `lst`. 
-(define (plugin-files lst)
-  (agidel/extension-files lst "plugin" "s"))
 
 
 ;; When an arg specifying extension to load is not loaded, defaults are applied.
@@ -116,7 +110,7 @@ This is the main file in the whole Agidel ecosystem.
 (let* ((args           (apply-defaults (traverse-args (command-line-arguments))))
        (files          (hash-table-ref args 'files))
        (syntrans-paths (agidel/syntrans-files (hash-table-ref args 'syntranses)))
-       (plugin-paths   (agidel/plugin-files (hash-table-ref args 'plugins)))
+       (plugin-paths   (plugin/files (hash-table-ref args 'plugins)))
        (syntrans-f     (compose-syntrans-f (hash-table-ref args 'syntranses)
                                            syntrans-paths))
        (parsed-files   (-> (lambda (f)
