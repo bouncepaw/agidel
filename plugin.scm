@@ -6,11 +6,6 @@
          (prefix (agidel core) agidel/)
          (srfi 69))
 
- ;; Return list of files with plugins. `lst` is list of plugins as symbols. The
- ;; order of files is the same as order in `lst`. 
- (define (files lst)
-   (agidel/extension-files lst "plugin" "s"))
-
  ;; Append '/_agidel-arities to each element of `lst`.
  (define (suffix-/_agidel-arities lst)
    (map (lambda (p) (symbol-append p '/_agidel-arities)) lst))
@@ -20,10 +15,9 @@
  ;;
  ;; `plugins` is list of plugins to use.
  (define (arities plugins)
-   (map load (files plugins)) ; Load all plugin files
    (eval (cons 'import (agidel/importify plugins 'plugin))) ; Import them
-   (define raw-arities
-     (foldl append '() (map eval (suffix-/_agidel-arities plugins))))
-   raw-arities
-   )
+   (foldl hash-table-merge
+          (make-hash-table)
+          (reverse (map eval (suffix-/_agidel-arities plugins)))))
+
  )
