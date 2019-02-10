@@ -7,6 +7,21 @@
 * TODO add prepare syntrans
   it has to convert agidel ast to scheme code, converting function
   invocatoins to what they need to be and etc.
+  
+  that's how it is going to be: there's hash-table with arities of
+  each agidel macro. some special list traversor traverses everything
+  like a pro. it checks car of a list. if it doesn't find it in the
+  hash, everything breaks (exit 1). otherwise it applies cdr of the
+  list to the corresponding function, according to arities map in the
+  hash. they can take such forms:
+  
+  a ::== q|e
+  - a
+    all args get aed
+  - (a a a a)
+    each element gets aed. if list is longer than arity list, (exit 1) 
+  - (a a a . a)
+    first 3 elts gets aed, and all other elts get aed too
 
 * TODO add aeval syntrans
   it is a simple wrapper around chicken interpreter.
