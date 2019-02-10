@@ -20,7 +20,7 @@
  ;; `syntranses` is list of syntranses to use.
  (define (compose-λ syntranses)
    (map load (files syntranses)) ; Load all syntrans files
-   (eval (cons 'import (agidel/importify syntranses))) ; Import them
+   (eval (cons 'import (agidel/importify syntranses 'syntrans))) ; Import them
    (eval (list 'lambda '(source) ; And create function from them
                (foldl (lambda (acc next) (list next acc))
                       'source

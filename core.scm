@@ -1,7 +1,7 @@
 (module
  agidel.core
  (disdot dotify parse-string mirror-set! add-to-list add-to-list!
-         extension-files)
+         extension-files importify)
  (import scheme
          (chicken base)
          (chicken string)
@@ -93,10 +93,10 @@
  
  ;; Make valid import directive for the `import` macro for each element in
  ;; `lst`.
- (define (importify lst)
+ (define (importify lst sym)
    (map (lambda (st)
           (list 'prefix
-                (symbol-append 'agidel-syntrans. st)
+                (symbol-append 'agidel- sym (string->symbol ".") st)
                 (symbol-append st '/)))
         lst))
  )
