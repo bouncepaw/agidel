@@ -1,7 +1,7 @@
 (module
  agidel.core
- (disdot dotify parse-string mirror-set! add-to-list add-to-list! syntrans-files
-         plugin-files)
+ (disdot dotify parse-string mirror-set! add-to-list add-to-list!
+         extension-files)
  (import scheme
          (chicken base)
          (chicken string)
@@ -11,7 +11,7 @@
          srfi-13
          srfi-1
          (clojurian syntax)
-         )
+         format)
 
  #|
  ;;; Global constants

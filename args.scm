@@ -3,6 +3,8 @@
  (traverse)
  (import scheme
          (chicken base)
+         (srfi 69)
+         format
          (prefix (agidel core) agidel/))
 
  
