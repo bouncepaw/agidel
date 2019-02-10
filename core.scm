@@ -1,6 +1,7 @@
 (module
  agidel.core
- (disdot dotify parse-string mirror-set! add-to-list add-to-list!)
+ (disdot dotify parse-string mirror-set! add-to-list add-to-list! syntrans-files
+         plugin-files)
  (import scheme
          (chicken base)
          (chicken string)
@@ -62,4 +63,33 @@
    (syntax-rules ()
      ((_ var expr) (set! var expr))))
 
+
+ ;; This function returns list of files which corresponds to list of syntranses
+ ;; or plugins to load.
+ ;;
+ ;; `lst`           : list of syntranses or plugins as symbols.
+ ;; `name`          : "plugin" or "syntrans".
+ ;; `plural-suffix` : "s"      or "es".
+ (define (extension-files lst name plural-suffix)
+   (let* ((agidel-dir (get-environment-variable "AGIDEL_DIR"))
+          (path (if agidel-dir
+                    (string-append agidel-dir "/" name "/")
+                    (string-append (get-environment-variable "HOME")
+                                   "/.agidel/" name "/")))
+          (needed-exts (map (lambda (f) (string-append f ".scm"))
+                            (map symbol->string lst)))
+          (local-exts (directory path))
+          (matched-exts (lset-intersection string=? needed-exts local-exts)))
+     (if (eq? (length matched-exts) (length needed-exts))
+         (map (lambda (f) (string-append path f)) matched-exts)
+         (begin
+           (format (current-error-port)
+                   "Agidel: could not load ~A~A: ~S\n"
+                   name
+                   plural-suffix
+                   (lset-difference string=? needed-exts matched-exts))
+           (exit 1)))))
+
  )
+
+

@@ -15,39 +15,18 @@ This is the main file in the whole Agidel ecosystem.
 (define (agilog . os)
   (when enable-agilog? (apply format #t os)))
 
-;; This function returns list of files which corresponds to list of syntranses
-;; or plugins to load.
-;;
-;; `lst`           : list of syntranses or plugins as symbols.
-;; `name`          : "plugin" or "syntrans".
-;; `plural-suffix` : "s"      or "es".
-(define (extension-files lst name plural-suffix)
-  (let* ((agidel-dir (get-environment-variable "AGIDEL_DIR"))
-         (path (if agidel-dir
-                   (string-append agidel-dir "/" name "/")
-                   (string-append (get-environment-variable "HOME")
-                                  "/.agidel/" name "/")))
-         (needed-exts (map (lambda (f) (string-append f ".scm"))
-                           (map symbol->string lst)))
-         (local-exts (directory path))
-         (matched-exts (lset-intersection string=? needed-exts local-exts)))
-    (if (eq? (length matched-exts) (length needed-exts))
-        (map (lambda (f) (string-append path f)) matched-exts)
-        (begin
-          (format (current-error-port)
-                  "Agidel: could not load ~A~A: ~S\n"
-                  name
-                  plural-suffix
-                  (lset-difference string=? needed-exts matched-exts))
-          (exit 1)))))
 
-;; Return list of files with syntranses. `lst` is list of syntranses as symbols.
+;; Return list of files with syntranses. `lst` is list of syntranses as
+;; symbols. The order of files is the same as order in `lst`.
 (define (syntrans-files lst)
-  (extension-files lst "syntrans" "es"))
+  (agidel/extension-files lst "syntrans" "es"))
 
-;; Return list of files with plugins. `lst` is list of plugins as symbols.
+
+
+;; Return list of files with plugins. `lst` is list of plugins as symbols. The
+;; order of files is the same as order in `lst`. 
 (define (plugin-files lst)
-  (extension-files lst "plugin" "s"))
+  (agidel/extension-files lst "plugin" "s"))
 
 
 ;; When an arg specifying extension to load is not loaded, defaults are applied.
@@ -136,8 +115,8 @@ This is the main file in the whole Agidel ecosystem.
 ;; Main
 (let* ((args           (apply-defaults (traverse-args (command-line-arguments))))
        (files          (hash-table-ref args 'files))
-       (syntrans-paths (syntrans-files (hash-table-ref args 'syntranses)))
-       (plugin-paths   (plugin-files (hash-table-ref args 'plugins)))
+       (syntrans-paths (agidel/syntrans-files (hash-table-ref args 'syntranses)))
+       (plugin-paths   (agidel/plugin-files (hash-table-ref args 'plugins)))
        (syntrans-f     (compose-syntrans-f (hash-table-ref args 'syntranses)
                                            syntrans-paths))
        (parsed-files   (-> (lambda (f)
