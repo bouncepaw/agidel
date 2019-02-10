@@ -9,18 +9,13 @@ This is the main file in the whole Agidel ecosystem.
         (srfi 1)
         (prefix (agidel core) agidel/)
         (prefix (agidel plugin) plugin/)
+        (prefix (agidel syntrans) syntrans/)
         format
         (clojurian syntax))
 
 (define enable-agilog? #t)
 (define (agilog . os)
   (when enable-agilog? (apply format #t os)))
-
-
-;; Return list of files with syntranses. `lst` is list of syntranses as
-;; symbols. The order of files is the same as order in `lst`.
-(define (syntrans-files lst)
-  (agidel/extension-files lst "syntrans" "es"))
 
 
 ;; When an arg specifying extension to load is not loaded, defaults are applied.
@@ -109,7 +104,7 @@ This is the main file in the whole Agidel ecosystem.
 ;; Main
 (let* ((args           (apply-defaults (traverse-args (command-line-arguments))))
        (files          (hash-table-ref args 'files))
-       (syntrans-paths (agidel/syntrans-files (hash-table-ref args 'syntranses)))
+       (syntrans-paths (syntrans/files (hash-table-ref args 'syntranses)))
        (plugin-paths   (plugin/files (hash-table-ref args 'plugins)))
        (syntrans-f     (compose-syntrans-f (hash-table-ref args 'syntranses)
                                            syntrans-paths))
