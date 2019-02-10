@@ -83,36 +83,16 @@ This is the main file in the whole Agidel ecosystem.
   (loop (alist->hash-table '((files))) args))
 
 
-
-(define (compose-syntrans-f syntranses paths)
-  (map load paths)
-  (let* ((/main-ed-syntranses
-          (map (lambda (st) (symbol-append st '/main))
-               syntranses))
-         (prefixed-syntranses
-          (map (lambda (st) (list 'prefix
-                                  (symbol-append 'agidel-syntrans. st)
-                                  (symbol-append st '/)))
-               syntranses)))
-    (eval (cons 'import prefixed-syntranses))
-    (eval (list 'lambda
-                '(source)
-                (foldl (lambda (acc next)
-                         (list next acc)) 'source /main-ed-syntranses)))))
-
-
 ;; Main
 (let* ((args           (apply-defaults (traverse-args (command-line-arguments))))
        (files          (hash-table-ref args 'files))
-       (syntrans-paths (syntrans/files (hash-table-ref args 'syntranses)))
        (plugin-paths   (plugin/files (hash-table-ref args 'plugins)))
-       (syntrans-f     (compose-syntrans-f (hash-table-ref args 'syntranses)
-                                           syntrans-paths))
+       (syntrans-λ     (syntrans/compose-λ (hash-table-ref args 'syntranses)))
        (parsed-files   (-> (lambda (f)
                              (-> f
                                  open-input-file
                                  (as-> x (read-string #f x))
-                                 syntrans-f))
+                                 syntrans-λ))
                            (map files)
                            (string-join "\n" 'suffix))))
   (format #t "~A" parsed-files)
