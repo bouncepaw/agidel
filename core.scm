@@ -90,6 +90,15 @@
                    (lset-difference string=? needed-exts matched-exts))
            (exit 1)))))
 
+ 
+ ;; Make valid import directive for the `import` macro for each element in
+ ;; `lst`.
+ (define (importify lst)
+   (map (lambda (st)
+          (list 'prefix
+                (symbol-append 'agidel-syntrans. st)
+                (symbol-append st '/)))
+        lst))
  )
 
 
