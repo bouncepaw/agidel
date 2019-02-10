@@ -7,4 +7,5 @@
     (extension agidel.class (source "class.scm"))
     (extension agidel.plugin (source "plugin.scm"))
     (extension agidel.syntrans (source "syntrans.scm"))
+    (extension agidel.args (source "args.scm"))
     (program agidel (source "agidel.scm"))))
