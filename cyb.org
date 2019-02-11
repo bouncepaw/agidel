@@ -24,4 +24,12 @@
     first 3 elts gets aed, and all other elts get aed too
 
 * TODO add aeval syntrans
+  
   it is a simple wrapper around chicken interpreter.
+
+* TODO idea: gnu quotes syntrans
+
+  Support for quotes like that: `text' and ``text''. Syntrans will
+  convert them to traditional "quotes". GNU quotes do not require
+  mirroring for double quotes. `' require mirroring for single quotes
+  though. 
