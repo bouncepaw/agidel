@@ -21,8 +21,7 @@
  ;; plugins to `prepare` syntrans. I can't pass it directly to the syntrans
  ;; function, because syntranses are designed to work with strings only.
  (define (save-needed-plugins plugins)
-   (set-environment-variable! "AGIDEL_TMP_PLUGINS"
-                              (->string (map string->symbol plugins))))
+   (set-environment-variable! "AGIDEL_TMP_PLUGINS" (->string plugins)))
 
  ;; Get list of all needed plugins from env var AGIDEL_TMP_PLUGINS
  (define (needed-plugins)
