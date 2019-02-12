@@ -47,7 +47,7 @@
  ;;  (command-line-arguments).
  (define (traverse args)
    (apply-defaults
-    (let loop ((args-hash '((files)))
+    (let loop ((args-hash (alist->hash-table '((files))))
                (args args))
       (cond
        ;; When hit end.
