@@ -8,6 +8,7 @@
  (import scheme
          (chicken base)
          (chicken process-context)
+         (chicken string)
          (prefix (agidel core) agidel/)
          (srfi 69))
 
