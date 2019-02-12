@@ -24,13 +24,7 @@ This is the main file in the whole Agidel ecosystem.
 (let* ((args           (args/traverse (command-line-arguments)))
        (files          (hash-table-ref args 'files))
        (syntrans-λ     (syntrans/compose-λ (hash-table-ref args 'syntranses))))
-  ;; I put this thing into env variable, because I am not aware of global
-  ;; variables in Chicken Scheme. I need a global variable to pass list of
-  ;; plugins to `prepare` syntrans. I can't pass it directly to the syntrans
-  ;; function, because syntranses are designed to work with strings only.
-  (set-environment-variable! "AGIDEL_TMP_PLUGINS"
-                             (->string (map string->symbol
-                                            (hash-table-ref args 'plugins))))
+  (plugin/save-needed-plugins (hash-table-ref args 'plugins))
   (format #t "~A" (-> (lambda (f)
                         (-> f
                             open-input-file
@@ -38,4 +32,5 @@ This is the main file in the whole Agidel ecosystem.
                             syntrans-λ))
                       (map files)
                       (string-join "\n" 'suffix)))
+  (plugin/free-needed-plugins)
   )
