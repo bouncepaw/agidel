@@ -3,6 +3,7 @@
  (files arities)
  (import scheme
          (chicken base)
+         (chicken process-context)
          (prefix (agidel core) agidel/)
          (srfi 69))
 
@@ -10,6 +11,11 @@
  (define (suffix-/_agidel-arities lst)
    (map (lambda (p) (symbol-append p '/_agidel-arities)) lst))
 
+
+ ;; Get list of all needed plugins from env var AGIDEL_TMP_PLUGINS
+ (define (needed-plugins)
+   (car (agidel/parse-string (get-environment-variable "AGIDEL_TMP_PLUGINS"))))
+ 
  ;; Return hash-table, where keys are function names and values are
  ;; lists like that: (q e q q . e). You know that well amigo.
  ;;
