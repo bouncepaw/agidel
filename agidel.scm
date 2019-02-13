@@ -23,14 +23,13 @@ This is the main file in the whole Agidel ecosystem.
 ;; Main
 (let* ((args           (args/traverse (command-line-arguments)))
        (files          (hash-table-ref args 'files))
+       (plugins        (hash-table-ref args 'plugins))
        (syntrans-λ     (syntrans/compose-λ (hash-table-ref args 'syntranses))))
-  (plugin/save-needed-plugins (hash-table-ref args 'plugins))
   (format #t "~A" (-> (lambda (f)
                         (-> f
                             open-input-file
                             (as-> x (read-string #f x))
-                            syntrans-λ))
+                            (as-> x (syntrans-λ x plugins))))
                       (map files)
                       (string-join "\n" 'suffix)))
-  (plugin/free-needed-plugins)
   )
