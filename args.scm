@@ -16,7 +16,8 @@
                           (syntranses discomment
                                       disbrace
                                       disbracket
-                                      quotify)
+                                      quotify
+                                      prepare)
                           (files))))
    (hash-table-merge args-hash default-hash))
 
