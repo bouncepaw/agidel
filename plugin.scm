@@ -1,10 +1,7 @@
 (module
  agidel.plugin
  (suffix-/_agidel-arities
-  arities
-  save-needed-plugins
-  needed-plugins
-  free-needed-plugins)
+  arities)
  (import scheme
          (chicken base)
          (chicken process-context)
