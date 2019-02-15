@@ -16,10 +16,11 @@ Agidel is built from three things:
   facilities that get source code on input and output modified code to
   the next syntrans. Each syntrans is meant to do one thing. For
   example:
-  - `discomment` strips all comment from source code and outputs
+  - `discomment` strips all comments from source code and outputs
     comment-less code.
   - `disbrace` extends S-expression syntax with support for braces.
   - etc.
+
   After syntax transformation, transpiler ends up with valid Scheme
   code that uses functions from…
 - Plugins. These are Scheme modules that provide functions for final
@@ -27,6 +28,7 @@ Agidel is built from three things:
   plugins are not made yet):
   - `c` adds support for generating C programs.
   - `json` adds support for generating JSON documents.
+
   These functions are meant to return strings that are put into final
   code. Since they behave just like Lisp macros (they get source code
   and return modified source code), they are called Agidel macros.
