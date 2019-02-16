@@ -4,7 +4,7 @@
 * DONE fix syntranses
   for example, disbracket is not working perfectly.
 
-* TODO add prepare syntrans
+* DONE add prepare syntrans
   it has to convert agidel ast to scheme code, converting function
   invocatoins to what they need to be and etc.
   
@@ -23,7 +23,7 @@
   - (a a a . a)
     first 3 elts gets aed, and all other elts get aed too
 
-* TODO add aeval syntrans
+* TODO add run syntrans
   
   it is a simple wrapper around chicken interpreter.
 
