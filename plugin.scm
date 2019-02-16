@@ -1,7 +1,7 @@
 (module
  agidel.plugin
  (suffix-/_agidel-arities
-  arities)
+  signatures)
  (import scheme
          (chicken base)
          (chicken process-context)
@@ -17,7 +17,7 @@
  ;; lists like that: (q e q q . e). You know that well amigo.
  ;;
  ;; `plugins` is list of plugins to use.
- (define (arities plugins)
+ (define (signatures plugins)
    (eval (cons 'import (agidel/importify plugins 'plugin))) ; Import them
    (foldl hash-table-merge
           (make-hash-table)
