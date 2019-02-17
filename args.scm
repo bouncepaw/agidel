@@ -17,7 +17,8 @@
                                       disbrace
                                       disbracket
                                       quotify
-                                      prepare)
+                                      prepare
+                                      run)
                           (files))))
    (hash-table-merge args-hash default-hash))
 
