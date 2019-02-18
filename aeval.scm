@@ -12,8 +12,8 @@
          format
          matchable)
 
- ;; Return parser.
- (define (<parser> λ-name signatures)
+ ;; Return arg-handler.
+ (define (<arg-handler> λ-name signatures)
    (define signature (hash-table-ref signatures (symbol-append '/ λ-name)))
 
    (define (aquote expr) `(quote ,expr))
@@ -23,17 +23,17 @@
       ((eq? q/e 'q) aquote)
       ((eq? q/e 'e) aeval)))
 
-   (define (rest-parser . args)
+   (define (rest-arg-handler . args)
      (define λ (q/e->λ signature))
      (map λ args))
    
-   (define (normal-parser . args)
+   (define (normal-arg-handler . args)
      (define λs (map q/e->λ signature))
      (map (lambda (λ+arg)
             (apply (car λ+arg) (cdr λ+arg)))
           (zip λs args)))
 
-   (define (normal+rest-parser . args)
+   (define (normal+rest-arg-handler . args)
      (define normal-length (length+ signature))
      (define normal-λs (map q/e->λ (take signature normal-length)))
      (define rest-λ (q/e->λ (drop signature normal-length)))
@@ -43,9 +43,9 @@
              (map rest-λ (drop args normal-length))))
 
    (cond
-    ((symbol? signature)      rest-parser)
-    ((proper-list? signature) normal-parser)
-    ((dotted-list? signature) normal+rest-parser)))
+    ((symbol? signature)      rest-arg-handler)
+    ((proper-list? signature) normal-arg-handler)
+    ((dotted-list? signature) normal+rest-arg-handler)))
 
  ;; Return aeval object based on plugins list.
  ;; 
@@ -64,9 +64,9 @@
               (let* ((λ-name      (string->symbol (car expr)))
                      (λ-name*     (symbol-append '/agidel/ λ-name))
                      (args        (cdr expr))
-                     (parser      (<parser> λ-name signatures))
-                     (parsed-args (apply parser args)))
-                (cons λ-name* parsed-args)))
+                     (arg-handler (<arg-handler> λ-name signatures))
+                     (args*       (apply arg-handler args)))
+                (cons λ-name* args*)))
              (else expr))))
     (('run)
      (lambda (expr)
