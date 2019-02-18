@@ -17,6 +17,9 @@
   (extension agidel.args
              (source "args.scm")
              (component-dependencies agidel.core))
+  (extension agidel.aeval
+             (source "aeval.scm")
+             (component-dependencies agidel.core agidel.plugin))
   (program agidel
            (source "agidel.scm")
            (component-dependencies agidel.core
