@@ -1,12 +1,9 @@
 #!/bin/sh
-filename=$1
-shift
 csi_args="-batch -quiet "
 for plugin in "$@"
 do
     csi_args+="-require-extension agidel-plugin.$plugin "
 done
 
-tmp="(begin $(cat $filename))"
-csi $csi_args -e "(begin $(cat $filename))"
+csi $csi_args -e "(display (string-append $(cat /dev/stdin)))"
 echo
