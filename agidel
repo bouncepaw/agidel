@@ -1,5 +1,7 @@
 #!/bin/sh
-import_statement="(import (only scheme define quote string-append display)"
+import_statement="(import (prefix (only scheme define string-append display)
+                      AGIDEL/)
+              (only scheme quote)"
 for plugin in "$@"; do
 import_statement+="(agidel-plugin $plugin)"
 
@@ -8,8 +10,8 @@ import_statement+=")"
 csi $csi_args -batch -quiet -eval "(begin
         (module agidel_temp (main)
                 $import_statement
-                (define (main)
-                   (display (string-append $(cat /dev/stdin)))))
+                (AGIDEL/define (main)
+                   (AGIDEL/display (AGIDEL/string-append $(cat /dev/stdin)))))
         (import agidel_temp)
         (main))"
 echo
