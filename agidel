@@ -1,9 +1,15 @@
 #!/bin/sh
-csi_args="-batch -quiet "
-for plugin in "$@"
-do
-    csi_args+="-require-extension agidel-plugin.$plugin "
-done
+import_statement="(import (only scheme define quote string-append display)"
+for plugin in "$@"; do
+import_statement+="(agidel-plugin $plugin)"
 
-csi $csi_args -e "(display (string-append $(cat /dev/stdin)))"
+done
+import_statement+=")"
+csi $csi_args -batch -quiet -eval "(begin
+        (module agidel_temp (main)
+                $import_statement
+                (define (main)
+                   (display (string-append $(cat /dev/stdin)))))
+        (import agidel_temp)
+        (main))"
 echo
