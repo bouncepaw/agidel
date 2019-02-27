@@ -1,0 +1,44 @@
+;; disbracket syntrans
+;;   © 2019 Timur Ismagilov
+;;   MIT License
+;;
+;; [a b c] → (_bracket a b c)
+
+(import stdbool.h unistd.h stdio.h)
+
+(defvar
+  (in_string bool)
+  (escaping_char bool)
+  (pairs_in_search unsigned int)
+  (ch char))
+
+(defun (main int) ()
+  (while (positive? [read STDIN_FILENO &ch 1])
+    (if in_string
+        (cond
+          (escaping_char
+           [printf "\%c" ch]
+           (set escaping_char false))
+          ((eq? ch '\\')
+           (set escaping_char true))
+          ((eq? ch '\"')
+           [printf "%c" ch]
+           (set in_string false))
+          (else
+           [printf "%c" ch]))
+        (cond
+          ((eq? ch '[')
+           [printf "(_bracket "]
+           (inc pairs_in_search))
+          ((eq? ch ']')
+           [printf ")"]
+           (dec pairs_in_search))
+          ((eq? ch '\"')
+           (set in_string true)
+           [printf "%c" ch])
+          (else
+           [printf "%c" ch]))))
+  (when-not (zero? pairs_in_search)
+      [fprintf stderr "Agidel: %d unmatched bracket pairs." pairs_in_search]
+      (return 1))
+  (return 0))
