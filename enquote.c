@@ -4,7 +4,9 @@
 #include <ctype.h>
 
 enum State { LIST, STRING, ESCAPING, SYMBOL} state = LIST;
-int nestlvl = 0;
+bool in_car = false;
+int nestlvl = 0,
+  spacecnt = 0;
 char ch;
 
 int main() {
@@ -33,16 +35,19 @@ int main() {
     case SYMBOL:
       if (isspace(ch)) state = LIST;
       putchar(ch);
+      spacecnt++;
       break;
 
     case LIST:
       switch (ch) {
       case '(':
         nestlvl++;
+        spacecnt = 0;
         putchar(ch);
         break;
       case ')':
         nestlvl--;
+        spacecnt = 1;
         putchar(ch);
         break;
       case '\"':
@@ -52,9 +57,11 @@ int main() {
       default:
         if (isspace(ch)) {
           putchar(ch);
+          spacecnt++;
         } else {
           state = SYMBOL;
-          printf("'%c", ch);
+          if (spacecnt > 0) printf("'%c", ch);
+          else putchar(ch);
         }
       }
     }
