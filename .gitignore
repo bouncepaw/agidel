@@ -3,3 +3,11 @@
 *.o
 *.*.sh
 *.so
+disbrac*
+*.lisp
+*.scm
+agidecopy.sh
+enquote
+wrap_string
+legacy
+*.agidel
