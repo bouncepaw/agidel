@@ -1,0 +1,40 @@
+(import stdbool.h unistd.h stdio.h ctype.h)
+(enum State LIST STRING ESCAPING SYMBOL)
+(defvar
+   (state State = LIST)
+   (in_car bool = false)
+   (nestlvl int = 0)
+   (spacecnt int = 0)
+   (ch char))
+
+(defun (main int) ()
+   (while (positive? [read STDIN_FILENO &ch 1])
+    (case state
+     ((ESCAPING) [putchar ch]
+                 (set state STRING))
+     ((STRING) (case ch
+                (('\\') (set state ESCAPING)
+                        [putchar ch])
+                (('\"') (set state LIST)
+                        [putchar ch])
+                (else [putchar ch])))
+     ((SYMBOL) (when [isspace ch] (set state LIST))
+               [putchar ch]
+               (inc spacecnt))
+     ((LIST) (case ch
+              (('(') (inc nestlvl)
+                     (set spacecnt 0)
+                     [putchar ch]))
+              ((')') (dec nestvl)
+                     (set spacecnt 1)
+                     [putchar ch])
+              (('\"') (set state STRING)
+                      [putchar ch])
+              (else (if [isspace ch]
+                       (begin [putchar ch]
+                              (inc spacecnt))
+                       (begin (set state SYMBOL)
+                              (if (positive? spacecnt)
+                                 [printf "'%c" ch]
+                                 [putchar ch])))))))
+   (return 0))
