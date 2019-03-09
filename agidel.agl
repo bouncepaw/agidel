@@ -12,6 +12,7 @@
         (module agidel_temp (main)
                 $import_statement
                 (AGIDEL/define (main)
+                   (AGIDEL/define $should_use_semicolon? #t)
                    (AGIDEL/display (AGIDEL/string-append $(cat /dev/stdin)))))
         (import agidel_temp)
         (main))"]
